@@ -4,7 +4,9 @@ import zipfile
 import tempfile
 import uuid
 import socket
-from datetime import datetime
+import threading
+import time
+from datetime import datetime, timedelta
 from pathlib import Path
 from flask import Flask, render_template, request, jsonify, send_file
 from flask_cors import CORS
@@ -143,7 +145,8 @@ def upload_file():
         zip_path = os.path.join(temp_dir, f'extracted_code_{session_id}.zip')
         create_zip_archive(output_dir, zip_path)
         
-        # Store result information
+        # Store result information BEFORE returning response
+        # This ensures session is available immediately for download
         RESULTS_CACHE[session_id] = {
             'zip_path': zip_path,
             'output_dir': output_dir,
@@ -152,6 +155,13 @@ def upload_file():
             'timestamp': datetime.now(),
             'stats': stats
         }
+        
+        # Verify zip file exists before returning success
+        if not os.path.exists(zip_path):
+            return jsonify({
+                'status': 'error',
+                'message': 'Failed to create ZIP file'
+            }), 500
         
         return jsonify({
             'status': 'success',
@@ -169,15 +179,41 @@ def upload_file():
 @app.route('/download/<session_id>')
 def download_file(session_id):
     """Download the generated zip file."""
+    # Clean up old sessions periodically (runs on each download request)
+    cleanup_old_sessions(max_age_hours=24)
+    
     if session_id not in RESULTS_CACHE:
-        return jsonify({'error': 'Session not found or expired'}), 404
+        # Return HTML error page instead of JSON for better user experience
+        error_html = '''
+        <!DOCTYPE html>
+        <html>
+        <head><title>Download Error</title></head>
+        <body>
+            <h1>Download Error</h1>
+            <p>Session not found or expired. Please upload your file again.</p>
+            <p><a href="/">Return to Home</a></p>
+        </body>
+        </html>
+        '''
+        return error_html, 404
     
     result = RESULTS_CACHE[session_id]
     zip_path = result['zip_path']
     filename = result['filename']
     
     if not os.path.exists(zip_path):
-        return jsonify({'error': 'File not found'}), 404
+        error_html = '''
+        <!DOCTYPE html>
+        <html>
+        <head><title>Download Error</title></head>
+        <body>
+            <h1>Download Error</h1>
+            <p>ZIP file not found. The file may have been cleaned up.</p>
+            <p><a href="/">Return to Home</a></p>
+        </body>
+        </html>
+        '''
+        return error_html, 404
     
     return send_file(
         zip_path,
@@ -213,10 +249,13 @@ def find_available_port(start_port=5000, max_attempts=10):
             return port
     return None  # No available port found
 
-# Cleanup old sessions (optional, can be called periodically)
+# Cleanup old sessions (called automatically)
 def cleanup_old_sessions(max_age_hours=24):
-    """Remove old session files to prevent disk space issues."""
-    from datetime import timedelta
+    """Remove old session files to prevent disk space issues.
+    
+    Sessions older than max_age_hours will be removed from cache and
+    their temporary files will be deleted.
+    """
     cutoff_time = datetime.now() - timedelta(hours=max_age_hours)
     
     expired_sessions = []
@@ -234,10 +273,23 @@ def cleanup_old_sessions(max_age_hours=24):
     for session_id in expired_sessions:
         del RESULTS_CACHE[session_id]
 
+def run_cleanup_scheduler():
+    """Background thread to periodically clean up old sessions."""
+    while True:
+        time.sleep(3600)  # Run every hour
+        try:
+            cleanup_old_sessions(max_age_hours=24)
+        except Exception as e:
+            print(f"Error in cleanup scheduler: {e}")
+
 if __name__ == '__main__':
     # Create static and templates directories if they don't exist
     os.makedirs('static', exist_ok=True)
     os.makedirs('templates', exist_ok=True)
+    
+    # Start background cleanup scheduler (runs every hour)
+    cleanup_thread = threading.Thread(target=run_cleanup_scheduler, daemon=True)
+    cleanup_thread.start()
     
     # Get port from environment variable (Render.com sets PORT) or default to 5000
     port = int(os.environ.get('PORT', 5000))
@@ -261,6 +313,7 @@ if __name__ == '__main__':
     print("   • Real-time processing status")
     print("   • Automatic download of extracted code")
     print("   • Manual download link available")
+    print("   • Download links valid for 24 hours")
     print("\n" + "="*50 + "\n")
     
     app.run(debug=debug_mode, host='0.0.0.0', port=port)

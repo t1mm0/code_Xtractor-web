@@ -197,10 +197,11 @@ async function handleFile(file) {
         if (data.status === 'success') {
             currentSessionId = data.session_id;
             showResults(data);
-            // Trigger automatic download
+            // Trigger automatic download after a short delay to ensure session is ready
+            // Increased delay to ensure server has processed and stored the session
             setTimeout(() => {
                 triggerAutoDownload();
-            }, 500);
+            }, 1000);
         } else if (data.status === 'warning') {
             showError(data.message);
         } else {
