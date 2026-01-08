@@ -7,12 +7,29 @@ import socket
 from datetime import datetime
 from pathlib import Path
 from flask import Flask, render_template, request, jsonify, send_file
+from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
 # Import the existing extractor without modifications
 from app import CodeBlockExtractor, OUTPUT_DIR
 
 app = Flask(__name__)
+
+# Configure CORS to allow requests from www.codefrom.chat and codefrom.chat
+CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "https://www.codefrom.chat",
+            "https://codefrom.chat",
+            "http://localhost:5000",  # For local development
+            "http://localhost:3000",   # For local frontend development
+        ],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True
+    }
+})
+
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 app.config['UPLOAD_FOLDER'] = tempfile.gettempdir()
 
