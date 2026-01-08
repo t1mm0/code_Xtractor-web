@@ -15,12 +15,14 @@ from app import CodeBlockExtractor, OUTPUT_DIR
 
 app = Flask(__name__)
 
+# Determine if running in development mode
+is_development = os.environ.get('FLASK_ENV') == 'development' or os.environ.get('DEBUG', 'False').lower() == 'true'
+
 # Configure Flask to trust proxy headers (required for HTTPS behind Render.com's proxy)
 # This allows Flask to correctly detect HTTPS requests when behind a reverse proxy
-app.config['PREFERRED_URL_SCHEME'] = 'https'
-# In production (or when not explicitly in development), trust proxy headers from Render.com
-is_development = os.environ.get('FLASK_ENV') == 'development' or os.environ.get('DEBUG', 'False').lower() == 'true'
+# Only set HTTPS scheme in production to avoid breaking local development
 if not is_development:
+    app.config['PREFERRED_URL_SCHEME'] = 'https'
     # In production, trust proxy headers from Render.com
     from werkzeug.middleware.proxy_fix import ProxyFix
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
@@ -47,8 +49,13 @@ app.config['UPLOAD_FOLDER'] = tempfile.gettempdir()
 @app.after_request
 def set_security_headers(response):
     """Add security headers for HTTPS compatibility."""
-    # Strict Transport Security (HSTS) - force HTTPS for 1 year
-    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    # Determine if running in development mode (check again in case env changed)
+    is_dev = os.environ.get('FLASK_ENV') == 'development' or os.environ.get('DEBUG', 'False').lower() == 'true'
+    
+    # Strict Transport Security (HSTS) - ONLY in production
+    # HSTS breaks local development by forcing HTTPS on localhost
+    if not is_dev:
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
     
     # Content Security Policy
     response.headers['Content-Security-Policy'] = (
