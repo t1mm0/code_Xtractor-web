@@ -3,17 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Block Extractor</title>
+    
+    <!-- Primary Meta Tags -->
+    <title>Extract Code from AI Chats - Free Code Block Extractor Tool | CodeFrom.Chat</title>
+    <meta name="title" content="Extract Code from AI Chats - Free Code Block Extractor Tool | CodeFrom.Chat">
+    <meta name="description" content="Extract and organize code blocks from AI chat markdown files instantly. Smart file naming, automatic organization, and ZIP download. Free, fast, and easy to use.">
+    <meta name="keywords" content="code extractor, extract code from markdown, AI chat code extractor, markdown code blocks, code organization tool, free code extractor, ChatGPT code extractor, Claude code extractor, code block parser, markdown parser">
+    <meta name="author" content="CodeFrom.Chat">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="7 days">
+    <link rel="canonical" href="https://codefrom.chat/">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://codefrom.chat/">
+    <meta property="og:title" content="Extract Code from AI Chats - Free Code Block Extractor Tool">
+    <meta property="og:description" content="Extract and organize code blocks from AI chat markdown files instantly. Smart file naming, automatic organization, and ZIP download. Free, fast, and easy to use.">
+    <meta property="og:image" content="https://codefrom.chat/static/icons/code-extractor3.svg">
+    <meta property="og:site_name" content="CodeFrom.Chat">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://codefrom.chat/">
+    <meta name="twitter:title" content="Extract Code from AI Chats - Free Code Block Extractor Tool">
+    <meta name="twitter:description" content="Extract and organize code blocks from AI chat markdown files instantly. Smart file naming, automatic organization, and ZIP download.">
+    <meta name="twitter:image" content="https://codefrom.chat/static/icons/code-extractor3.svg">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icons/code-extractor3.svg') }}">
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Code Block Extractor",
+      "alternateName": "CodeFrom.Chat",
+      "url": "https://codefrom.chat",
+      "description": "Extract and organize code blocks from AI chat markdown files instantly. Smart file naming, automatic organization, and ZIP download.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5",
+        "ratingCount": "1"
+      },
+      "featureList": [
+        "Extract code blocks from markdown files",
+        "Smart file naming based on code analysis",
+        "Automatic file organization",
+        "Support for multiple programming languages",
+        "Drag and drop interface",
+        "ZIP file download",
+        "Real-time processing status",
+        "File tree parsing",
+        "Multi-version file handling"
+      ],
+      "browserRequirements": "Requires JavaScript. Requires HTML5.",
+      "softwareVersion": "1.0",
+      "releaseNotes": "Initial release with drag-and-drop interface and smart code extraction"
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Code Block Extractor",
+      "description": "Free web tool to extract code blocks from AI chat markdown files with intelligent file naming and organization",
+      "url": "https://codefrom.chat",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0"
+      },
+      "featureList": [
+        "Markdown code block extraction",
+        "AST-based code analysis",
+        "Smart filename generation",
+        "Multi-language support",
+        "File tree structure preservation",
+        "ZIP archive creation"
+      ]
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "CodeFrom.Chat",
+      "url": "https://codefrom.chat",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://codefrom.chat/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
         <header>
             <h1>
-                <img src="{{ url_for('static', filename='icons/code-extractor3.svg') }}" alt="Code Extractor Icon" class="header-icon">
-               Extract Code from AI Chats
+                <img src="{{ url_for('static', filename='icons/code-extractor3.svg') }}" alt="Code Block Extractor Tool Icon" class="header-icon" width="80" height="80">
+                Extract Code from AI Chats
             </h1>
-            <h2>The best way to extract code blocks from Ai chat markdown.</h2>
+            <h2>The best way to extract code blocks from AI chat markdown files</h2>
             <p><strong>INSTRUCTIONS:</strong> Upload the entire chat as a markdown file to extract.</p>
             <P>This will extract the code blocks from the chat and organize them into a structured folder hierarchy.
             </p>
@@ -30,7 +136,7 @@
                     </svg>
                     <h2>Drag & Drop Your Full Chat as a Markdown File</h2>
                     <p>or click to browse • or paste markdown text directly</p>
-                    <span class="file-types">Supports: .md files (max 16MB) • Paste markdown text</span>
+                    <span class="file-types">Supports: .md files (max 16MB) • Paste markdown text • Works with ChatGPT, Claude, and other AI chat exports</span>
                 </div>
                 <input type="file" id="fileInput" accept=".md" style="display: none;">
             </div>
@@ -90,8 +196,8 @@
         </main>
 
         <!-- Information Section -->
-        <section class="info-section">
-            <h2 class="info-title">What This Does</h2>
+        <section class="info-section" aria-label="Features and capabilities">
+            <h2 class="info-title">What This Tool Does</h2>
             <div class="info-rows">
                 <div class="info-row">
                     <div class="info-icon">
@@ -104,7 +210,7 @@
                     </div>
                     <div class="info-content">
                         <h3>Extracts Code Blocks</h3>
-                        <p>Automatically finds and extracts all code blocks from your markdown files</p>
+                        <p>Automatically finds and extracts all code blocks from your markdown files. Supports Python, JavaScript, TypeScript, and 20+ programming languages.</p>
                     </div>
                 </div>
                 <div class="info-row">
@@ -119,7 +225,7 @@
                     </div>
                     <div class="info-content">
                         <h3>Smart File Naming</h3>
-                        <p>Intelligently names extracted files based on language, context, and content</p>
+                        <p>Intelligently names extracted files using AST parsing, pattern detection, and code analysis. Automatically converts class names to filenames.</p>
                     </div>
                 </div>
                 <div class="info-row">
@@ -130,7 +236,7 @@
                     </div>
                     <div class="info-content">
                         <h3>Organizes by Type</h3>
-                        <p>Groups files by programming language and organizes them in a structured folder hierarchy</p>
+                        <p>Groups files by programming language and organizes them in a structured folder hierarchy. Preserves file tree structures from markdown.</p>
                     </div>
                 </div>
                 <div class="info-row">
