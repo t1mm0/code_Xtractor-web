@@ -9,8 +9,14 @@
 <body>
     <div class="container">
         <header>
-            <h1>🔍 Code Block Extractor</h1>
-            <p>Upload a markdown file to extract and organize code blocks intelligently</p>
+            <h1>
+                <img src="{{ url_for('static', filename='icons/code-extractor3.svg') }}" alt="Code Extractor Icon" class="header-icon">
+               Extract Code from AI Chats
+            </h1>
+            <h2>The best way to extract code blocks from Ai chat markdown.</h2>
+            <p><strong>INSTRUCTIONS:</strong> Upload the entire chat as a markdown file to extract.</p>
+            <P>This will extract the code blocks from the chat and organize them into a structured folder hierarchy.
+            </p>
         </header>
 
         <main>
@@ -22,7 +28,7 @@
                         <polyline points="17 8 12 3 7 8"></polyline>
                         <line x1="12" y1="3" x2="12" y2="15"></line>
                     </svg>
-                    <h2>Drag & Drop Your Markdown File</h2>
+                    <h2>Drag & Drop Your Full Chat as a Markdown File</h2>
                     <p>or click to browse • or paste markdown text directly</p>
                     <span class="file-types">Supports: .md files (max 16MB) • Paste markdown text</span>
                 </div>

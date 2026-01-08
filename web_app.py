@@ -174,19 +174,23 @@ if __name__ == '__main__':
     os.makedirs('static', exist_ok=True)
     os.makedirs('templates', exist_ok=True)
     
-    # Find an available port
-    preferred_port = 5000
-    port = find_available_port(preferred_port)
+    # Get port from environment variable (Render.com sets PORT) or default to 5000
+    port = int(os.environ.get('PORT', 5000))
     
-    if port is None:
-        print("❌ Error: Could not find an available port (tried ports 5000-5009)")
-        exit(1)
+    # Check if running in development mode
+    debug_mode = os.environ.get('FLASK_ENV') == 'development' or os.environ.get('DEBUG', 'False').lower() == 'true'
     
-    if port != preferred_port:
-        print(f"⚠️  Port {preferred_port} is in use, using port {port} instead")
+    # In production, try to find available port if default is in use
+    if not debug_mode:
+        preferred_port = port
+        port = find_available_port(preferred_port) or preferred_port
+        if port != preferred_port:
+            print(f"⚠️  Port {preferred_port} is in use, using port {port} instead")
     
     print("🚀 Starting Code Extractor Web Application")
     print(f"📍 Visit: http://localhost:{port}")
+    if not debug_mode:
+        print("🌐 Production mode enabled")
     print("\n✨ Features:")
     print("   • Drag & Drop markdown files")
     print("   • Real-time processing status")
@@ -194,5 +198,5 @@ if __name__ == '__main__':
     print("   • Manual download link available")
     print("\n" + "="*50 + "\n")
     
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(debug=debug_mode, host='0.0.0.0', port=port)
 
