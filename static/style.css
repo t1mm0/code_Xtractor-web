@@ -419,6 +419,33 @@ footer {
     border-top: 1px solid var(--border-color);
 }
 
+.footer-logo {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-logo a {
+    display: inline-block;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.footer-logo a:hover {
+    opacity: 0.7;
+}
+
+.teknoledg-logo {
+    width: 50%;
+    height: auto;
+    max-width: 600px;
+    min-width: 300px;
+    display: block;
+    margin: 0 auto;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    transition: opacity 0.3s ease;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {
@@ -453,6 +480,11 @@ footer {
 
     .info-title {
         font-size: 2rem;
+    }
+
+    .teknoledg-logo {
+        width: 80%;
+        min-width: 240px;
     }
 
     .info-row {
