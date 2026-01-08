@@ -1,4 +1,4 @@
-# Render.com deployment configuration
+# Render.com Blueprint Configuration
 # Purpose: Deploy Code Block Extractor as Docker service on Render.com
 # Last Modified: 2024-12-19
 # Domain: https://codefrom.chat
@@ -8,17 +8,16 @@ services:
   - type: web
     name: code-extractor-web
     runtime: docker
-    plan: starter  # Change to 'standard' or 'pro' for production
-    region: oregon  # Change to your preferred region
+    plan: starter  # Options: free, starter ($7/mo), standard ($25/mo), pro ($85/mo)
+    region: oregon  # Options: oregon, frankfurt, singapore, ohio, virginia
     dockerfilePath: ./Dockerfile
     dockerContext: .
     envVars:
       - key: PYTHONUNBUFFERED
         value: 1
-      - key: PORT
-        fromService:
-          type: web
-          name: code-extractor-web
-          property: port
+      - key: FLASK_ENV
+        value: production
+      # PORT is automatically set by Render - no need to specify
     healthCheckPath: /
-    autoDeploy: true  # Set to false for manual deployments
+    autoDeploy: true  # Set to false for manual deployments only
+    branch: main  # Change to your default branch if different
