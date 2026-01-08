@@ -15,6 +15,16 @@ from app import CodeBlockExtractor, OUTPUT_DIR
 
 app = Flask(__name__)
 
+# Configure Flask to trust proxy headers (required for HTTPS behind Render.com's proxy)
+# This allows Flask to correctly detect HTTPS requests when behind a reverse proxy
+app.config['PREFERRED_URL_SCHEME'] = 'https'
+# In production (or when not explicitly in development), trust proxy headers from Render.com
+is_development = os.environ.get('FLASK_ENV') == 'development' or os.environ.get('DEBUG', 'False').lower() == 'true'
+if not is_development:
+    # In production, trust proxy headers from Render.com
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
 # Configure CORS to allow requests from www.codefrom.chat and codefrom.chat
 CORS(app, resources={
     r"/*": {
@@ -32,6 +42,37 @@ CORS(app, resources={
 
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 app.config['UPLOAD_FOLDER'] = tempfile.gettempdir()
+
+# Add security headers for HTTPS
+@app.after_request
+def set_security_headers(response):
+    """Add security headers for HTTPS compatibility."""
+    # Strict Transport Security (HSTS) - force HTTPS for 1 year
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    
+    # Content Security Policy
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: https:; "
+        "font-src 'self' data:; "
+        "connect-src 'self' https://www.codefrom.chat https://codefrom.chat;"
+    )
+    
+    # Prevent MIME type sniffing
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    
+    # XSS Protection
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    
+    # Prevent clickjacking
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    
+    # Referrer Policy
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    
+    return response
 
 # Store processing results temporarily
 RESULTS_CACHE = {}
