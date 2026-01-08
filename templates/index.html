@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Block Extractor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Code Block Extractor</h1>
+            <p>Upload a markdown file to extract and organize code blocks intelligently</p>
+        </header>
+
+        <main>
+            <!-- Drop Zone -->
+            <div id="dropZone" class="drop-zone">
+                <div class="drop-zone-content">
+                    <svg class="upload-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <h2>Drag & Drop Your Markdown File</h2>
+                    <p>or click to browse • or paste markdown text directly</p>
+                    <span class="file-types">Supports: .md files (max 16MB) • Paste markdown text</span>
+                </div>
+                <input type="file" id="fileInput" accept=".md" style="display: none;">
+            </div>
+
+            <!-- Processing Status (hidden by default) -->
+            <div id="statusContainer" class="status-container" style="display: none;">
+                <div class="status-content">
+                    <div class="spinner"></div>
+                    <h3 id="statusTitle">Processing...</h3>
+                    <p id="statusMessage">Analyzing your markdown file</p>
+                </div>
+            </div>
+
+            <!-- Results Section (hidden by default) -->
+            <div id="resultsContainer" class="results-container" style="display: none;">
+                <div class="results-success">
+                    <svg class="success-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    <h2>✅ Extraction Complete!</h2>
+                    <p id="resultsMessage">Your code has been extracted and organized</p>
+                    
+                    <div class="stats-grid" id="statsGrid">
+                        <!-- Stats will be inserted here -->
+                    </div>
+
+                    <div class="download-actions">
+                        <button id="downloadBtn" class="btn btn-primary">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Download ZIP
+                        </button>
+                        <button id="resetBtn" class="btn btn-secondary">
+                            Extract Another File
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Section (hidden by default) -->
+            <div id="errorContainer" class="error-container" style="display: none;">
+                <div class="error-content">
+                    <svg class="error-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
+                    <h2>Error</h2>
+                    <p id="errorMessage"></p>
+                    <button id="errorResetBtn" class="btn btn-secondary">Try Again</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Information Section -->
+        <section class="info-section">
+            <h2 class="info-title">What This Does</h2>
+            <div class="info-rows">
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg width="64" height="64" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <g fill="currentColor">
+                                <path d="m60.605 12.234h-55.832v82.992h83l-0.003907-27.164v-28.664h-27.164zm-1.5 54.328h-25.668v-25.664h25.668zm-52.832-52.828h25.668v25.664h-25.668zm0 27.164h25.668v25.664h-25.668zm25.664 52.828h-25.664v-25.664h25.668zm27.168 0h-25.668v-25.664h25.668zm27.164 0h-25.664v-25.664h25.664zm0-52.828v25.664h-25.664v-25.664zm-52.832-1.5v-25.664h25.668v25.664z"/>
+                                <path d="m66.562 4.7734v28.664h28.664v-28.664zm27.164 27.164h-25.664v-25.664h25.664v25.664z"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <h3>Extracts Code Blocks</h3>
+                        <p>Automatically finds and extracts all code blocks from your markdown files</p>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg width="64" height="64" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <g fill="currentColor">
+                                <path d="m45.16 71.543l-6.0977 15.656h3.3516l1.2891-3.5586h6.2578l1.3672 3.5586h3.4414l-6.2695-15.66h-3.3398zm-0.48047 9.4648l2.1172-5.8086 2.1562 5.8086z"/>
+                                <path d="m56.352 71.543h3.1641v15.66h-3.1641z"/>
+                                <path d="m89.062 15.508l-15.508-15.508h-62.617v100h78.125zm-3.125 26.211l-17.07 17.07h-11.934l29.004-29.004zm0 4.418v12.652h-12.652zm0-20.77l-33.426 33.422h-11.934l43.676-43.672 1.6836 1.6836zm-61.715 33.422l51.852-51.852 5.9648 5.9648-45.883 45.887zm49.645-54.062l-54.062 54.062h-5.7422v-6.1953l49.473-49.469h8.7305zm-59.805 15.16l16.762-16.762h11.934l-28.695 28.699zm0 16.355l33.117-33.117h11.934l-45.051 45.055zm12.344-33.117l-12.344 12.344v-12.344zm-12.344 93.75v-34.961h71.875v34.961z"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <h3>Smart File Naming</h3>
+                        <p>Intelligently names extracted files based on language, context, and content</p>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg width="64" height="64" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <path fill="currentColor" d="m9.3594 1.6523h28.195c2.2891 0 4.3711 0.9375 5.8789 2.4414 1.5078 1.5078 2.4414 3.5898 2.4414 5.8789v28.195c0 2.2891-0.9375 4.3711-2.4414 5.8789-1.5078 1.5078-3.5898 2.4414-5.8789 2.4414h-28.195c-2.2891 0-4.3711-0.9375-5.8789-2.4414-1.5078-1.5078-2.4414-3.5898-2.4414-5.8789v-28.195c0-2.2891 0.9375-4.3711 2.4414-5.8789 1.5078-1.5078 3.5898-2.4414 5.8789-2.4414zm67.188 56.453c-4.9219 0-9.3789 1.9961-12.605 5.2227-3.2266 3.2266-5.2227 7.6836-5.2227 12.605s1.9961 9.3789 5.2227 12.605c3.2266 3.2266 7.6836 5.2227 12.605 5.2227s9.3828-1.9961 12.605-5.2227c3.2266-3.2266 5.2188-7.6836 5.2188-12.605s-1.9961-9.3828-5.2188-12.605c-3.2266-3.2266-7.6836-5.2188-12.605-5.2188zm-15.848 1.9766c4.0547-4.0547 9.6602-6.5664 15.848-6.5664s11.793 2.5117 15.848 6.5664c4.0547 4.0547 6.5664 9.6602 6.5664 15.848s-2.5078 11.793-6.5664 15.848c-4.0547 4.0547-9.6602 6.5664-15.848 6.5664s-11.793-2.5078-15.848-6.5664c-4.0547-4.0547-6.5664-9.6602-6.5664-15.848s2.5117-11.793 6.5664-15.848zm-51.332-6.5664h28.195c2.2891 0 4.3711 0.9375 5.8789 2.4414 1.5078 1.5078 2.4414 3.5898 2.4414 5.8789v28.195c0 2.2891-0.9375 4.3711-2.4414 5.8789-1.5078 1.5078-3.5898 2.4414-5.8789 2.4414h-28.195c-2.2891 0-4.3711-0.9375-5.8789-2.4414-1.5078-1.5078-2.4414-3.5898-2.4414-5.8789v-28.195c0-2.2891 0.9375-4.3711 2.4414-5.8789 1.5078-1.5078 3.5898-2.4414 5.8789-2.4414zm28.195 4.5898h-28.195c-1.0234 0-1.957 0.42188-2.6328 1.0977-0.67969 0.67969-1.0977 1.6094-1.0977 2.6328v28.195c0 1.0234 0.42188 1.957 1.0977 2.6328 0.67969 0.67969 1.6094 1.0977 2.6328 1.0977h28.195c1.0234 0 1.957-0.42188 2.6328-1.0977 0.67969-0.67969 1.0977-1.6094 1.0977-2.6328v-28.195c0-1.0234-0.42188-1.957-1.0977-2.6328-0.67969-0.67969-1.6094-1.0977-2.6328-1.0977zm24.895-56.453h28.195c2.2891 0 4.3711 0.9375 5.8789 2.4414 1.5078 1.5078 2.4414 3.5898 2.4414 5.8789v28.195c0 2.2891-0.9375 4.3711-2.4414 5.8789-1.5078 1.5078-3.5898 2.4414-5.8789 2.4414h-28.195c-2.2891 0-4.3711-0.9375-5.8789-2.4414-1.5078-1.5078-2.4414-3.5898-2.4414-5.8789v-28.195c0-2.2891 0.9375-4.3711 2.4414-5.8789 1.5078-1.5078 3.5898-2.4414 5.8789-2.4414zm28.195 4.5898h-28.195c-1.0234 0-1.957 0.42187-2.6328 1.0977-0.67969 0.67969-1.0977 1.6094-1.0977 2.6328v28.195c0 1.0234 0.42188 1.957 1.0977 2.6328 0.67969 0.67969 1.6094 1.0977 2.6328 1.0977h28.195c1.0234 0 1.957-0.42188 2.6328-1.0977 0.67969-0.67969 1.0977-1.6094 1.0977-2.6328v-28.195c0-1.0234-0.42187-1.957-1.0977-2.6328-0.67969-0.67969-1.6094-1.0977-2.6328-1.0977zm-53.09 0h-28.195c-1.0234 0-1.957 0.42187-2.6328 1.0977-0.67969 0.67969-1.0977 1.6094-1.0977 2.6328v28.195c0 1.0234 0.42188 1.957 1.0977 2.6328 0.67969 0.67969 1.6094 1.0977 2.6328 1.0977h28.195c1.0234 0 1.957-0.42188 2.6328-1.0977 0.67969-0.67969 1.0977-1.6094 1.0977-2.6328v-28.195c0-1.0234-0.42188-1.957-1.0977-2.6328-0.67969-0.67969-1.6094-1.0977-2.6328-1.0977z"/>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <h3>Organizes by Type</h3>
+                        <p>Groups files by programming language and organizes them in a structured folder hierarchy</p>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg width="64" height="64" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <g fill="currentColor">
+                                <path d="m45.805 74.113v-2.457h-11.457v2.6484h7.293l-8.2227 10.16v2.8516h12.719v-2.6367h-8.9062z"/>
+                                <path d="m48.039 71.656h3.1641v15.66h-3.1641z"/>
+                                <path d="m63.047 71.895c-0.58594-0.15625-1.8359-0.23438-3.7578-0.23438h-5.0742v15.66h3.1641l-0.003906-5.9141h2.0625c1.4297 0 2.5234-0.070312 3.2773-0.22266 0.55469-0.12109 1.1016-0.36719 1.6406-0.74219 0.53906-0.375 0.97656-0.88672 1.3281-1.543 0.35156-0.65625 0.52344-1.4648 0.52344-2.4219 0-1.2461-0.30469-2.2656-0.91016-3.0547-0.60156-0.78516-1.3516-1.293-2.25-1.5273zm-0.45312 5.8398c-0.23828 0.35156-0.57031 0.60547-0.98828 0.76953-0.41797 0.16406-1.25 0.24609-2.5 0.24609h-1.7305v-4.4453h1.5273c1.1367 0 1.8984 0.039062 2.2734 0.10547 0.51172 0.089844 0.9375 0.32422 1.2734 0.69531 0.33203 0.36719 0.5 0.83984 0.5 1.4102 0 0.46094-0.11719 0.86719-0.35547 1.2188z"/>
+                                <path d="m10.938 0v100h78.125v-84.492l-15.508-15.508zm62.93 4.7266l-54.062 54.066h-5.7422v-6.1953l49.473-49.473h8.7266zm-49.645 54.066l51.852-51.855 5.9688 5.9688-45.887 45.887zm-10.16-38.906l16.762-16.762h11.934l-28.695 28.695zm0 16.355l33.117-33.117h11.938l-45.055 45.055zm12.344-33.117l-12.344 12.344v-12.344zm-12.344 93.75v-34.957h71.875v34.957zm71.875-55.152l-17.074 17.07h-11.93l29.004-29.004zm0 4.418v12.652h-12.656zm0-20.773l-33.43 33.426h-11.934l43.68-43.676 1.6836 1.6836z"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <h3>Downloads as ZIP</h3>
+                        <p>Packages all extracted code files into a convenient ZIP archive for easy download</p>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M36 8L24 32H32L28 56L44 32H36L36 8Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <h3>Fast & Simple</h3>
+                        <p>Just drag, drop, paste, or upload your markdown file and get organized code instantly</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Intelligently extracts code blocks with smart file naming • Organizes by type • Preserves structure</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
+
