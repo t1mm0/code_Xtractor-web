@@ -36,4 +36,5 @@ EXPOSE 5000
 
 # Use gunicorn for production
 # Render.com sets PORT environment variable, default to 5000 if not set
-CMD gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 2 --threads 2 --timeout 120 --access-logfile - --error-logfile - web_app:app
+# Using sh -c to allow environment variable expansion in JSON array form
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 2 --threads 2 --timeout 120 --access-logfile - --error-logfile - web_app:app"]
